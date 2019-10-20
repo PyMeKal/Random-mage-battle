@@ -11,6 +11,7 @@ class Root:  # 기초
     text_color = (255, 255, 255)
     run = True
     win = pygame.display.set_mode(size)
+    clock = pygame.time.Clock()
     # noinspection SpellCheckingInspection
     font = pygame.font.Font("./res/malgun.ttf", 20)  # 기본 폰트
     pygame.display.set_caption("랜덤마법대전입니다 ~~")
@@ -33,10 +34,6 @@ class Root:  # 기초
             Root.turn = 1
         Root.game_turn += 1
 
-    @staticmethod
-    def get_turn():
-        global Play1, Play2
-        if Root.turn:  # 턴이 1이면 플레이어 1 0이면 플레이어 2
-            return Play1.name
-        else:
-            return Play2.name
+
+
+

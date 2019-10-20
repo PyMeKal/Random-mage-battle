@@ -24,7 +24,6 @@ class Player:
     def init(self):
         self.stat[1] = self.hp
         self.stat[2] = self.mp
-        self.death()
 
 
     def revive(self):
