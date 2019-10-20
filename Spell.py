@@ -1,19 +1,9 @@
-
-
-
-
-
+from Root import Root
 
 class Spell:
     def __init__(self):
         self.name = ''
         self.cost = 0
-
-    def use(self):
-        Play1.init()
-        Play2.init()
-        Root.change_turn()
-        Sys.init()
 
 
 class Buff(Spell):

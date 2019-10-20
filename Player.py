@@ -1,3 +1,5 @@
+from Root import Root
+
 class Player:
 
     def __init__(self, x, y, name, image):
@@ -24,12 +26,6 @@ class Player:
         self.stat[2] = self.mp
         self.death()
 
-    def death(self):
-        global Sys
-        if self.hp <= 0:
-            Sys = DeathScreen()
-        else:
-            pass
 
     def revive(self):
         self.hp = self.max_hp
@@ -44,9 +40,6 @@ class Player1(Player):
         super().__init__(x, y, name, image)
         self.stat = [self.name, self.hp, self.mp]
 
-    def death(self):
-        super().death()
-        Sys.text = Root.typing(f'{Play2.name}(이)가 이겼습니다!')
 
 
 class Player2(Player):
@@ -57,7 +50,4 @@ class Player2(Player):
         super().__init__(x, y, name, image)
         self.stat = [self.name, self.hp, self.mp]
 
-    def death(self):
-        super().death()
-        Sys.text = Root.typing(f'{Play1.name}(이)가 이겼습니다!')
 

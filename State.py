@@ -1,7 +1,7 @@
 import pygame
-
-from Player import Player1, Player2
 from Root import Root
+from Player import Player1, Player2
+from Spell import Fireball, Iceball, Thunder, Heal
 
 
 class State:
@@ -57,7 +57,7 @@ class State:
         self.show_menu()
 
 
-class Start_Screen(State):
+class StartScreen(State):
     text = Root.typing('랜덤 마법 대전')
 
     def __init__(self):
@@ -74,7 +74,7 @@ class Start_Screen(State):
 
     def show_menu(self):
         self.pointer.draw()
-        Root.win.blit(Start_Screen.text, (Root.size[0] / 2 - 100, Root.size[1] / 2 - 50))
+        Root.win.blit(StartScreen.text, (Root.size[0] / 2 - 100, Root.size[1] / 2 - 50))
         Root.win.blit(self.menu[0].name, (self.slot[0].x, self.slot[0].y))
         Root.win.blit(self.menu[1].name, (self.slot[1].x, self.slot[1].y))
 
@@ -93,6 +93,8 @@ class Game(State):
 
     def __init__(self):
         super().__init__()
+        self.player1 = Player1(Root.size[0] / 8, Root.size[1] / 4, '섹시도발태현이', Root.mage)
+        self.player2 = Player2(Root.size[0] - Root.size[0] / 8 - 74, Root.size[1] / 4, '머리반짝승준이', Root.mage2)
 
     def show_menu(self):
         pygame.draw.rect(Root.win, Root.text_color, (0, Root.size[1] / 2, Root.size[0], 5))
@@ -101,27 +103,35 @@ class Game(State):
         for i in range(len(self.menu)):
             Root.win.blit(self.menu[i].name, (self.menu[i].x, self.menu[i].y))
 
-    @staticmethod
-    def show_status():  # 상황 보여줌
+    def show_status(self):  # 상황 보여줌
         game_turn = Root.typing(f'턴 {int(Root.game_turn / 2)}')
         play_turn = Root.typing(f'{Root.get_turn()}의 턴')
         Root.win.blit(game_turn, (Root.size[0] / 2 - 70, Root.size[1] / 16 - 20))
         Root.win.blit(play_turn, (Root.size[0] / 2 - 70, Root.size[1] / 16))
         for i in range(3):
-            Root.win.blit(Root.typing(str(Play1.stat[i])), (Player1.stat_x, Player1.stat_y + i * 20))
-            Root.win.blit(Root.typing(str(Play2.stat[i])), (Player2.stat_x, Player2.stat_y + i * 20))
+            Root.win.blit(Root.typing(str(self.player1.stat[i])), (Player1.stat_x, Player1.stat_y + i * 20))
+            Root.win.blit(Root.typing(str(self.player2.stat[i])), (Player2.stat_x, Player2.stat_y + i * 20))
 
     def basic_atk(self):
         if Root.turn:
-            Play1.hit(Play2)
+            self.player1.hit(self.player2)
         else:
-            Play2.hit(Play1)
+            self.player2.hit(self.player1)
         Root.change_turn()
         self.init()
 
     def recover_mp(self):
         Root.change_turn()
         self.init()
+
+    @staticmethod
+    def death(loser, winner):
+        global Sys
+        if loser.hp <= 0:
+            Sys = DeathScreen()
+        else:
+            pass
+        Sys.text = Root.typing(f'{winner.name}(이)가 이겼습니다!')
 
     def init(self):
         self.place = 0
@@ -164,8 +174,8 @@ class Game(State):
     def tick(self):
         super().tick()
         self.show_status()
-        Play1.render()
-        Play2.render()
+        self.player1.render()
+        self.player2.render()
 
 
 class DeathScreen(State):
@@ -200,17 +210,12 @@ class DeathScreen(State):
     def start_screen(self):
         self.reset()
         global Sys
-        Sys = Start_Screen()
+        Sys = StartScreen()
 
     @staticmethod
     def reset():
         Root.choose_turn()
         Root.game_turn = 2
-        global Sys, Play1, Play2
-        Play1.revive()
-        Play1.init()
-        Play2.revive()
-        Play2.init()
 
     @staticmethod
     def end():
