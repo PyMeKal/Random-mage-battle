@@ -12,6 +12,7 @@ class Root:  # 기초
     run = True
     win = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
+    state = 0
     # noinspection SpellCheckingInspection
     font = pygame.font.Font("./res/malgun.ttf", 20)  # 기본 폰트
     pygame.display.set_caption("랜덤마법대전입니다 ~~")

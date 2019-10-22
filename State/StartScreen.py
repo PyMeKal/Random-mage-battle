@@ -1,5 +1,5 @@
-from State import State
-from Game import Game
+from Root import Root
+from state.State import State
 
 class StartScreen(State):
     text = Root.typing('랜덤 마법 대전')
@@ -24,10 +24,9 @@ class StartScreen(State):
 
     @staticmethod
     def start():
-        global Sys
         Root.choose_turn()
-        Sys = Game()
-        Sys.init()
+        Root.state = 1
+
 
     def credit(self):
         pass

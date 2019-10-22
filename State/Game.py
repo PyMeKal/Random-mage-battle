@@ -1,8 +1,9 @@
 import pygame
-from State import State
-from Player import Player1, Player2
-from DeathScreen import DeathScreen
-from Spell import Fireball, Iceball, Thunder, Heal
+from Root import Root
+from state.State import State
+from ele.Player import Player1, Player2
+from state.DeathScreen import DeathScreen
+from ele.Spell import Fireball, Iceball, Thunder, Heal
 pygame.init()
 
 
@@ -46,12 +47,11 @@ class Game(State):
 
     @staticmethod
     def death(loser, winner):
-        global Sys
         if loser.hp <= 0:
-            Sys = DeathScreen()
+            Root.state = 2
         else:
             pass
-        Sys.text = Root.typing(f'{winner.name}(이)가 이겼습니다!')
+        DeathScreen.text = Root.typing(f'{winner.name}(이)가 이겼습니다!')
 
     def get_turn(self):
         if Root.turn:  # 턴이 1이면 플레이어 1 0이면 플레이어 2

@@ -53,4 +53,7 @@ class State:
         self.control()
         self.show_menu()
 
+    def init(self):
+        pass
+
 

@@ -1,6 +1,5 @@
-from State import State
-from Game import Game
-from StartScreen import StartScreen
+from Root import Root
+from state.State import State
 
 class DeathScreen(State):
 
@@ -27,14 +26,13 @@ class DeathScreen(State):
 
     def restart(self):
         self.reset()
-        global Sys
-        Sys = Game()
-        Sys.init()
+        Root.state = 1
+
 
     def start_screen(self):
         self.reset()
-        global Sys
-        Sys = StartScreen()
+        Root.state = 0
+
 
     @staticmethod
     def reset():
