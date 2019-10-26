@@ -34,7 +34,7 @@ class State:
                 Root.run = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    self.menu[self.place].func()
+                    self.control_function()
                 elif event.key == pygame.K_UP:
                     self.place -= 1
                     self.pointer_limit()
@@ -52,6 +52,9 @@ class State:
     def tick(self):
         self.control()
         self.show_menu()
+
+    def control_function(self):
+        self.menu[self.place].func()
 
     def init(self):
         pass

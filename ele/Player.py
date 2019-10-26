@@ -13,6 +13,7 @@ class Player:
         self.mp = 20
         self.strength = 20
         self.stat = []
+        self.spell_list = []
 
     def hit(self, target):
         target.hp -= self.strength

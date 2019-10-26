@@ -1,9 +1,11 @@
-from Root import Root
 
 class Spell:
     def __init__(self):
         self.name = ''
         self.cost = 0
+
+    def use(self):
+        pass
 
 
 class Buff(Spell):
@@ -12,17 +14,13 @@ class Buff(Spell):
         self.heal = 0
         self.strength_buff = 0
 
-    def use(self):
-        global Play1, Play2
-        if Root.turn:
-            Play1.hp += self.heal
-            Play1.strength += self.strength_buff
-            Play1.mp -= self.cost
-        else:
-            Play2.hp += self.heal
-            Play2.strength += self.strength_buff
-            Play2.mp -= self.cost
-        super().use()
+    def use(self, user, target):
+        user.hp += self.heal
+        user.strength += self.strength_buff
+        user.mp -= self.cost
+        user.init()
+        target.init()
+
 
 
 class ATK_Spell(Spell):
@@ -30,15 +28,12 @@ class ATK_Spell(Spell):
         super().__init__()
         self.damage = 0
 
-    def use(self):
-        global Play1, Play2
-        if Root.turn:
-            Play2.hp -= self.damage
-            Play1.mp -= self.cost
-        else:
-            Play1.hp -= self.damage
-            Play2.mp -= self.cost
-        super().use()
+    def use(self, user, target):
+        target.hp -= self.damage
+        user.mp -= self.cost
+        user.init()
+        target.init()
+
 
 
 class Heal(Buff):
@@ -72,6 +67,39 @@ class Thunder(ATK_Spell):
     def __init__(self):
         super().__init__()
         self.name = '번개'
+        self.damage = 40
+        self.cost = 15
+
+
+class Wowei(ATK_Spell):
+
+    def __init__(self):
+        super().__init__()
+        self.name = '와우이'
+        self.damage = 40
+        self.cost = 15
+
+class Museik(ATK_Spell):
+
+    def __init__(self):
+        super().__init__()
+        self.name = '머쓱'
+        self.damage = 40
+        self.cost = 15
+
+class Thank(ATK_Spell):
+
+    def __init__(self):
+        super().__init__()
+        self.name = '감사여'
+        self.damage = 40
+        self.cost = 15
+
+class Pound(ATK_Spell):
+
+    def __init__(self):
+        super().__init__()
+        self.name = '파운드'
         self.damage = 40
         self.cost = 15
 
