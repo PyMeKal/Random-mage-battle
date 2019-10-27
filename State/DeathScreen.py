@@ -1,11 +1,12 @@
 from Root import Root
 from state.State import State
+from ele.PlayerManager import RealPlayers as P
 
 class DeathScreen(State):
+    text = Root.typing('')
 
     def __init__(self):
         super().__init__()
-        self.text = Root.typing('')
         self.slot = [
             State.Slot(Root.size[0] / 2 - 100, Root.size[1] / 2),
             State.Slot(Root.size[0] / 2 - 100, Root.size[1] / 2 + 30),
@@ -20,7 +21,7 @@ class DeathScreen(State):
 
     def show_menu(self):
         self.pointer.draw()
-        Root.win.blit(self.text, (Root.size[0] / 2 - 160, Root.size[1] / 2 - 50))
+        Root.win.blit(DeathScreen.text, (Root.size[0] / 2 - 160, Root.size[1] / 2 - 50))
         for i in range(len(self.menu)):
             Root.win.blit(self.menu[i].name, (self.slot[i].x, self.slot[i].y))
 
@@ -33,10 +34,13 @@ class DeathScreen(State):
         self.reset()
         Root.state = 0
 
-
     @staticmethod
     def reset():
         Root.choose_turn()
+        P.player1.revive()
+        P.player2.revive()
+        P.player1.init()
+        P.player2.init()
         Root.game_turn = 2
 
     @staticmethod

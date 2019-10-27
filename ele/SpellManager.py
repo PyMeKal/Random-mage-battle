@@ -22,6 +22,5 @@ def random_spell(player):
             distribute_list.remove(spell)
 
     distribute_list = [Fireball(), Iceball(), Thunder(), Heal(), Pound(), Wowei(), Thank(), Museik()]
-    print(distribute_list)
 
 

@@ -4,7 +4,6 @@ from state.State import State
 from ele.Player import Player1, Player2
 from ele.PlayerManager import RealPlayers as P
 from state.DeathScreen import DeathScreen
-from ele.Spell import Spell, Fireball, Iceball, Thunder, Heal
 import ele.SpellManager as Sp
 pygame.init()
 
@@ -14,6 +13,8 @@ class Game(State):
         super().__init__()
         self.player1 = P.player1
         self.player2 = P.player2
+        self.player1_choose = False
+        self.player2_choose = False
 
     def show_menu(self):
         pygame.draw.rect(Root.win, Root.text_color, (0, Root.size[1] / 2, Root.size[0], 5))
@@ -38,36 +39,48 @@ class Game(State):
         else:
             self.player2.hit(self.player1)
             Game.death(self.player1, self.player2)
-        Root.change_turn()
-        self.init()
+        self.getover_turn(3)
 
     def use_spell(self):
         if Root.turn:
-            self.player1.spell_list[self.place].use(self.player1, self.player2)
-            Game.death(self.player2, self.player1)
+            if self.player1.spell_list[self.place].cost <= self.player1.mp:
+                self.player1.spell_list[self.place].use(self.player1, self.player2)
+                Game.death(self.player2, self.player1)
+                self.getover_turn(0)
         else:
-            self.player2.spell_list[self.place].use(self.player2, self.player1)
-            Game.death(self.player1, self.player2)
-        Root.change_turn()
-        self.init()
+            if self.player2.spell_list[self.place].cost <= self.player2.mp:
+                self.player2.spell_list[self.place].use(self.player2, self.player1)
+                Game.death(self.player1, self.player2)
+                self.getover_turn(0)
 
     def recover_mp(self):
-        Root.change_turn()
-        self.init()
+        self.getover_turn(10)
+
 
     @staticmethod
     def death(loser, winner):
         if loser.hp <= 0:
-            DeathScreen.text = Root.typing(f'{winner.name}(이)가 이겼습니다!')
             Root.state = 2
         else:
             pass
+        DeathScreen.text = Root.typing(f'{winner.name}(이)가 이겼습니다!')
 
     def get_turn(self):
         if Root.turn:  # 턴이 1이면 플레이어 1 0이면 플레이어 2
             return self.player1.name
         else:
             return self.player2.name
+
+    def getover_turn(self, mp):
+        if Root.turn:
+            self.player1.mp += mp
+            self.player1.init()
+        else:
+            self.player2.mp += mp
+            self.player2.init()
+        Root.change_turn()
+        self.player1_choose, self.player2_choose = False, False
+        self.init()
 
     def init(self):
         self.place = 0
@@ -98,17 +111,20 @@ class Game(State):
     def open_magic_menu(self):
         self.place = 0
 
-        if Root.turn:
+        if Root.turn and not self.player1_choose:
             Sp.random_spell(self.player1)
-        else:
+            self.player1_choose = True
+        elif not Root.turn and not self.player2_choose:
             Sp.random_spell(self.player2)
+            self.player2_choose = True
 
         if Root.turn:
             self.menu = [
                 State.Input(self.slot[0].x, self.slot[0].y, self.player1.spell_list[0].name, self.use_spell),
                 State.Input(self.slot[1].x, self.slot[1].y, self.player1.spell_list[1].name, self.use_spell),
                 State.Input(self.slot[2].x, self.slot[2].y, self.player1.spell_list[2].name, self.use_spell),
-                State.Input(self.slot[3].x, self.slot[3].y, self.player1.spell_list[3].name, self.use_spell)
+                State.Input(self.slot[3].x, self.slot[3].y, self.player1.spell_list[3].name, self.use_spell),
+                State.Input(self.slot[4].x, self.slot[4].y, '돌아가기', self.init)
             ]
 
         else:
@@ -116,7 +132,8 @@ class Game(State):
                 State.Input(self.slot[0].x, self.slot[0].y, self.player2.spell_list[0].name, self.use_spell),
                 State.Input(self.slot[1].x, self.slot[1].y, self.player2.spell_list[1].name, self.use_spell),
                 State.Input(self.slot[2].x, self.slot[2].y, self.player2.spell_list[2].name, self.use_spell),
-                State.Input(self.slot[3].x, self.slot[3].y, self.player2.spell_list[3].name, self.use_spell)
+                State.Input(self.slot[3].x, self.slot[3].y, self.player2.spell_list[3].name, self.use_spell),
+                State.Input(self.slot[4].x, self.slot[4].y, '돌아가기', self.init)
             ]
 
 
