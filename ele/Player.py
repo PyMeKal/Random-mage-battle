@@ -9,9 +9,10 @@ class Player:
 
         self.max_hp = 100
         self.hp = 100
-        self.max_mp = 20
-        self.mp = 20
-        self.strength = 20
+        self.max_mp = 300
+        self.mp = 300
+        self.strength = 10
+        self.strength_buffed = False
         self.stat = []
         self.spell_list = []
 

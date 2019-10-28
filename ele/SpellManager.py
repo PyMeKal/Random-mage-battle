@@ -1,9 +1,9 @@
 import random
-from Root import Root
-from ele.PlayerManager import RealPlayers as P
-from ele.Spell import Spell, Fireball, Iceball, Thunder, Heal, Pound, Wowei, Thank, Museik
+from ele.Spell import Spell, Fireball, Iceball, Thunder, Heal, Pound, Wowei, Thank, Museik, PorkGukBab, HellChang1, HellChang2, LeftOver, Teeth
 
-distribute_list = [Fireball(), Iceball(), Thunder(), Heal(), Pound(), Wowei(), Thank(), Museik()]
+distribute_list = [Fireball(), Iceball(), Thunder(), Heal(), Pound(), Wowei(),
+                   Thank(), Museik(), PorkGukBab(), HellChang1(), HellChang2(),
+                   LeftOver(), Teeth()]
 
 
 def random_spell(player):
@@ -21,6 +21,8 @@ def random_spell(player):
             player.spell_list.append(spell)
             distribute_list.remove(spell)
 
-    distribute_list = [Fireball(), Iceball(), Thunder(), Heal(), Pound(), Wowei(), Thank(), Museik()]
+    distribute_list = [Fireball(), Iceball(), Thunder(), Heal(), Pound(), Wowei(),
+                       Thank(), Museik(), PorkGukBab(), HellChang1(), HellChang2(),
+                       LeftOver(), Teeth(), ]
 
 

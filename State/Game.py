@@ -15,11 +15,14 @@ class Game(State):
         self.player2 = P.player2
         self.player1_choose = False
         self.player2_choose = False
+        self.show_action = False
 
     def show_menu(self):
         pygame.draw.rect(Root.win, Root.text_color, (0, Root.size[1] / 2, Root.size[0], 5))
-        pygame.draw.rect(Root.win, Root.text_color, (Root.size[0] / 2, Root.size[1] / 2, 5, Root.size[1]))
-        self.pointer.draw()
+        if not self.show_action:
+            pygame.draw.rect(Root.win, Root.text_color, (Root.size[0] / 2, Root.size[1] / 2, 5, Root.size[1]))
+        if type(self.pointer) is not int:
+            self.pointer.draw()
         for i in range(len(self.menu)):
             Root.win.blit(self.menu[i].name, (self.menu[i].x, self.menu[i].y))
 
@@ -36,25 +39,46 @@ class Game(State):
         if Root.turn:
             self.player1.hit(self.player2)
             Game.death(self.player2, self.player1)
+            self.get_mp(20)
+            self.show_actions(f'{self.player1.name}(이)가 기본 공격을 했다.',
+                              f'{self.player2.name}(은)는 {self.player1.strength}의 데미지를 입었다.','','')
+            if self.player1.strength_buffed:
+                self.player1.strength_buffed = False
+                self.player1.strength = 20
         else:
             self.player2.hit(self.player1)
             Game.death(self.player1, self.player2)
-        self.getover_turn(3)
+            self.get_mp(20)
+            self.show_actions(f'{self.player2.name}(이)가 기본 공격을 했다.',
+                              f'{self.player1.name}(은)는 {self.player2.strength}의 데미지를 입었다.','','')
+            if self.player2.strength_buffed:
+                self.player2.strength_buffed = False
+                self.player2.strength = 20
+
 
     def use_spell(self):
         if Root.turn:
             if self.player1.spell_list[self.place].cost <= self.player1.mp:
                 self.player1.spell_list[self.place].use(self.player1, self.player2)
                 Game.death(self.player2, self.player1)
-                self.getover_turn(0)
+                self.show_actions(f'{self.player1.name}(이)가 {self.player1.spell_list[self.place].name}(을)를 사용했다.',
+                                f'{self.player2.name}(은)는 {self.player1.spell_list[self.place].damage}의 데미지를 입었다.',
+                                f'{self.player1.name}(은)는 {self.player1.spell_list[self.place].heal}만큼 회복했다.',
+                                f'{self.player1.name}(은)는 {self.player1.spell_list[self.place].strength_buff}만큼 강화했다.')
+
         else:
             if self.player2.spell_list[self.place].cost <= self.player2.mp:
                 self.player2.spell_list[self.place].use(self.player2, self.player1)
                 Game.death(self.player1, self.player2)
-                self.getover_turn(0)
+                self.show_actions(f'{self.player2.name}(이)가 {self.player2.spell_list[self.place].name}(을)를 사용했다.',
+                                f'{self.player1.name}(은)는 {self.player2.spell_list[self.place].damage}의 데미지를 입었다.',
+                                f'{self.player2.name}(은)는 {self.player2.spell_list[self.place].heal}만큼 회복했다.',
+                                f'{self.player2.name}(은)는 {self.player2.spell_list[self.place].strength_buff}만큼 강화했다.')
+
 
     def recover_mp(self):
-        self.getover_turn(10)
+        self.get_mp(100)
+        self.show_actions(f'{self.player1.name}(이)가 마나 회복을 했다.', '','','')
 
 
     @staticmethod
@@ -71,16 +95,23 @@ class Game(State):
         else:
             return self.player2.name
 
-    def getover_turn(self, mp):
-        if Root.turn:
-            self.player1.mp += mp
-            self.player1.init()
-        else:
-            self.player2.mp += mp
-            self.player2.init()
+    def getover_turn(self):
+        self.show_action = False
         Root.change_turn()
         self.player1_choose, self.player2_choose = False, False
         self.init()
+
+    def get_mp(self,mp):
+        if Root.turn:
+            self.player1.mp += mp
+            if self.player1.mp > self.player1.max_mp:
+                self.player1.mp = self.player1.max_mp
+            self.player1.init()
+        else:
+            self.player2.mp += mp
+            if self.player2.mp > self.player2.max_mp:
+                self.player2.mp = self.player2.max_mp
+            self.player2.init()
 
     def init(self):
         self.place = 0
@@ -138,6 +169,26 @@ class Game(State):
 
 
         self.pointer = State.Pointer(self.slot[self.place].x, self.slot[self.place].y)
+
+    def show_actions(self, text1, text2, text3, text4):
+        self.slot = [
+            State.Slot(Root.size[0] / 16, Root.size[1] / 2 + 50),
+            State.Slot(Root.size[0] / 16, Root.size[1] / 2 + 50 * 2),
+            State.Slot(Root.size[0] / 16, Root.size[1] / 2 + 50 * 3),
+            State.Slot(Root.size[0] / 16, Root.size[1] / 2 + 50 * 4),
+            State.Slot(Root.size[0] / 16, Root.size[1] / 2 + 50 * 5)
+        ]
+
+        self.place = 0
+        self.show_action = True
+        self.pointer = 0
+        self.menu = [
+            State.Input(self.slot[0].x, self.slot[0].y, text1, self.getover_turn),
+            State.Input(self.slot[1].x, self.slot[1].y, text2, self.getover_turn),
+            State.Input(self.slot[2].x, self.slot[2].y, text3, self.getover_turn),
+            State.Input(self.slot[3].x, self.slot[3].y, text4, self.getover_turn),
+        ]
+
 
     def control_function(self):
             self.menu[self.place].func()
