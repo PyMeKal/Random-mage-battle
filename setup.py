@@ -14,7 +14,7 @@ build_options = {
     'packages': ('pygame', )
 }
 
-executable = [Executable('./Main.py', base=base, icon='./res/GAMEICON.ico', targetName='Random-Mage-Battle.exe')]
+executable = [Executable('./Main.py', base=base, icon='./res/big slime.ico', targetName='Random-Mage-Battle.exe')]
 
 setup(
     name='Random-Mage-Battle',

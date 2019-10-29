@@ -37,27 +37,31 @@ class Game(State):
 
     def basic_atk(self):
         if Root.turn:
+            self.player2.image = Root.hitmotion2
             self.player1.hit(self.player2)
             Game.death(self.player2, self.player1)
             self.get_mp(20)
             self.show_actions(f'{self.player1.name}(이)가 기본 공격을 했다.',
                               f'{self.player2.name}(은)는 {self.player1.strength}의 데미지를 입었다.','','')
             if self.player1.strength_buffed:
-                self.player1.strength_buffed = False
-                self.player1.strength = 20
+                self.player1.image = pygame.image.load('./res/wizard_fury2_ attack.png')
+            elif not self.player1.slime:
+                self.player1.image = Root.attackmotion1
+
         else:
+            self.player1.image = Root.hitmotion1
             self.player2.hit(self.player1)
             Game.death(self.player1, self.player2)
             self.get_mp(20)
             self.show_actions(f'{self.player2.name}(이)가 기본 공격을 했다.',
                               f'{self.player1.name}(은)는 {self.player2.strength}의 데미지를 입었다.','','')
             if self.player2.strength_buffed:
-                self.player2.strength_buffed = False
-                self.player2.strength = 20
-
+                self.player2.image = pygame.image.load('./res/wizard_fury2_ attack2.png')
+            elif not self.player2.slime:
+                self.player2.image = Root.attackmotion2
 
     def use_spell(self):
-        if Root.turn:
+        if Root.turn and not self.player1.slime:
             if self.player1.spell_list[self.place].cost <= self.player1.mp:
                 self.player1.spell_list[self.place].use(self.player1, self.player2)
                 Game.death(self.player2, self.player1)
@@ -65,8 +69,9 @@ class Game(State):
                                 f'{self.player2.name}(은)는 {self.player1.spell_list[self.place].damage}의 데미지를 입었다.',
                                 f'{self.player1.name}(은)는 {self.player1.spell_list[self.place].heal}만큼 회복했다.',
                                 f'{self.player1.name}(은)는 {self.player1.spell_list[self.place].strength_buff}만큼 강화했다.')
+                if self.player1.strength_buffed: self.player1.image = pygame.image.load('./res/wizard_fury2.png')
 
-        else:
+        elif not Root.turn and not self.player2.slime:
             if self.player2.spell_list[self.place].cost <= self.player2.mp:
                 self.player2.spell_list[self.place].use(self.player2, self.player1)
                 Game.death(self.player1, self.player2)
@@ -74,12 +79,14 @@ class Game(State):
                                 f'{self.player1.name}(은)는 {self.player2.spell_list[self.place].damage}의 데미지를 입었다.',
                                 f'{self.player2.name}(은)는 {self.player2.spell_list[self.place].heal}만큼 회복했다.',
                                 f'{self.player2.name}(은)는 {self.player2.spell_list[self.place].strength_buff}만큼 강화했다.')
-
+                if self.player2.strength_buffed: self.player2.image = pygame.image.load('./res/wizard_fury2_2.png')
 
     def recover_mp(self):
         self.get_mp(100)
-        self.show_actions(f'{self.player1.name}(이)가 마나 회복을 했다.', '','','')
-
+        if Root.turn:
+            self.show_actions(f'{self.player1.name}(이)가 마나 회복을 했다.', '','','')
+        else:
+            self.show_actions(f'{self.player2.name}(이)가 마나 회복을 했다.', '', '', '')
 
     @staticmethod
     def death(loser, winner):
@@ -97,8 +104,44 @@ class Game(State):
 
     def getover_turn(self):
         self.show_action = False
-        Root.change_turn()
         self.player1_choose, self.player2_choose = False, False
+        if self.player1.slime and self.player1.slime_time + 2 == Root.game_turn:
+            self.player1.slime = False
+            self.player1.returned()
+        elif self.player1.slime:
+            self.player1.image = pygame.image.load('./res/slime.png')
+        if self.player2.slime and self.player2.slime_time + 2 == Root.game_turn:
+            self.player2.slime = False
+            self.player2.returned()
+        elif self.player2.slime:
+            self.player2.image = pygame.image.load('./res/slime2.png')
+        if self.player1.stun and self.player1.stun_time + 2 == Root.game_turn:
+            self.player1.returned()
+            self.player1.stun = False
+        elif self.player1.stun:
+            self.player1.image = pygame.image.load('./res/wizard_stuned.png')
+            Root.change_turn()
+            self.init()
+        if self.player2.stun and self.player2.stun_time + 2 == Root.game_turn:
+            self.player2.stun = False
+            self.player2.returned()
+        elif self.player2.stun:
+            self.player2.image = pygame.image.load('./res/wizard_stuned2.png')
+            Root.change_turn()
+            self.init()
+        if self.player1.strength_buffed and self.player1.strength_buffed_time + 2 == Root.game_turn:
+            self.player1.returned()
+            self.player1.strength_buffed = False
+            self.player1.strength = 10
+        if self.player2.strength_buffed and self.player2.strength_buffed_time + 2 == Root.game_turn:
+            self.player2.returned()
+            self.player2.strength_buffed = False
+            self.player2.strength = 10
+        if not self.player1.slime and not self.player1.stun and not self.player1.strength_buffed :
+            self.player1.returned()
+        if not self.player2.slime and not self.player2.stun and not self.player2.strength_buffed :
+            self.player2.returned()
+        Root.change_turn()
         self.init()
 
     def get_mp(self,mp):
@@ -141,33 +184,33 @@ class Game(State):
 
     def open_magic_menu(self):
         self.place = 0
-
+    
         if Root.turn and not self.player1_choose:
             Sp.random_spell(self.player1)
             self.player1_choose = True
         elif not Root.turn and not self.player2_choose:
             Sp.random_spell(self.player2)
             self.player2_choose = True
-
+    
         if Root.turn:
             self.menu = [
-                State.Input(self.slot[0].x, self.slot[0].y, self.player1.spell_list[0].name, self.use_spell),
-                State.Input(self.slot[1].x, self.slot[1].y, self.player1.spell_list[1].name, self.use_spell),
-                State.Input(self.slot[2].x, self.slot[2].y, self.player1.spell_list[2].name, self.use_spell),
-                State.Input(self.slot[3].x, self.slot[3].y, self.player1.spell_list[3].name, self.use_spell),
-                State.Input(self.slot[4].x, self.slot[4].y, '돌아가기', self.init)
-            ]
-
+                    State.Input(self.slot[0].x, self.slot[0].y, self.player1.spell_list[0].name, self.use_spell),
+                    State.Input(self.slot[1].x, self.slot[1].y, self.player1.spell_list[1].name, self.use_spell),
+                    State.Input(self.slot[2].x, self.slot[2].y, self.player1.spell_list[2].name, self.use_spell),
+                    State.Input(self.slot[3].x, self.slot[3].y, self.player1.spell_list[3].name, self.use_spell),
+                    State.Input(self.slot[4].x, self.slot[4].y, '돌아가기', self.init)
+                ]
+    
         else:
             self.menu = [
-                State.Input(self.slot[0].x, self.slot[0].y, self.player2.spell_list[0].name, self.use_spell),
-                State.Input(self.slot[1].x, self.slot[1].y, self.player2.spell_list[1].name, self.use_spell),
-                State.Input(self.slot[2].x, self.slot[2].y, self.player2.spell_list[2].name, self.use_spell),
-                State.Input(self.slot[3].x, self.slot[3].y, self.player2.spell_list[3].name, self.use_spell),
-                State.Input(self.slot[4].x, self.slot[4].y, '돌아가기', self.init)
-            ]
-
-
+                    State.Input(self.slot[0].x, self.slot[0].y, self.player2.spell_list[0].name, self.use_spell),
+                    State.Input(self.slot[1].x, self.slot[1].y, self.player2.spell_list[1].name, self.use_spell),
+                    State.Input(self.slot[2].x, self.slot[2].y, self.player2.spell_list[2].name, self.use_spell),
+                    State.Input(self.slot[3].x, self.slot[3].y, self.player2.spell_list[3].name, self.use_spell),
+                    State.Input(self.slot[4].x, self.slot[4].y, '돌아가기', self.init)
+                ]
+    
+    
         self.pointer = State.Pointer(self.slot[self.place].x, self.slot[self.place].y)
 
     def show_actions(self, text1, text2, text3, text4):
@@ -199,3 +242,4 @@ class Game(State):
         self.show_status()
         self.player1.render()
         self.player2.render()
+

@@ -3,6 +3,7 @@ from state.State import State
 
 class StartScreen(State):
     text = Root.typing('랜덤 마법 대전')
+    version = Root.typing('V.1.0.1 copyright by SaNaE')
 
     def __init__(self):
         super().__init__()
@@ -19,6 +20,7 @@ class StartScreen(State):
     def show_menu(self):
         self.pointer.draw()
         Root.win.blit(StartScreen.text, (Root.size[0] / 2 - 100, Root.size[1] / 2 - 50))
+        Root.win.blit(StartScreen.version, (Root.size[0] / 16, Root.size[1] - Root.size[1] / 16))
         Root.win.blit(self.menu[0].name, (self.slot[0].x, self.slot[0].y))
         Root.win.blit(self.menu[1].name, (self.slot[1].x, self.slot[1].y))
 
@@ -29,4 +31,4 @@ class StartScreen(State):
 
 
     def credit(self):
-        pass
+        Root.state = 3

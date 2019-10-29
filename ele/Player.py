@@ -13,6 +13,11 @@ class Player:
         self.mp = 300
         self.strength = 10
         self.strength_buffed = False
+        self.strength_buffed_time = -10
+        self.stun = False
+        self.stun_time = -10
+        self.slime = False
+        self.slime_time = -10
         self.stat = []
         self.spell_list = []
 
@@ -27,10 +32,19 @@ class Player:
         self.stat[1] = self.hp
         self.stat[2] = self.mp
 
-
     def revive(self):
         self.hp = self.max_hp
         self.mp = self.max_mp
+        self.stun = False
+        self.slime = False
+        self.strength = 10
+        self.strength_buffed = False
+        self.returned()
+
+    def returned(self):
+        pass
+
+
 
 
 class Player1(Player):
@@ -41,6 +55,8 @@ class Player1(Player):
         super().__init__(x, y, name, image)
         self.stat = [self.name, self.hp, self.mp]
 
+    def returned(self):
+        self.image = Root.mage
 
 
 class Player2(Player):
@@ -50,5 +66,8 @@ class Player2(Player):
     def __init__(self, x, y, name, image):
         super().__init__(x, y, name, image)
         self.stat = [self.name, self.hp, self.mp]
+
+    def returned(self):
+        self.image = Root.mage2
 
 

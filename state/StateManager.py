@@ -2,6 +2,7 @@ from Root import Root
 from state.StartScreen import StartScreen
 from state.Game import Game
 from state.DeathScreen import DeathScreen
+from state.Credit import Credit
 
 class StateManager:
     sys = StartScreen()
@@ -18,10 +19,14 @@ class StateManager:
                 StateManager.sys = Game()
                 StateManager.sys.init()
                 StateManager.last_state = 1
-            else:
+            elif Root.state == 2:
                 StateManager.sys = DeathScreen()
                 StateManager.sys.init()
                 StateManager.last_state = 2
+            else:
+                StateManager.sys = Credit()
+                StateManager.sys.init()
+                StateManager.last_state = 3
 
     @staticmethod
     def tick():

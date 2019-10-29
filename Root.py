@@ -16,8 +16,12 @@ class Root:  # 기초
     # noinspection SpellCheckingInspection
     font = pygame.font.Font("./res/malgun.ttf", 20)  # 기본 폰트
     pygame.display.set_caption("랜덤마법대전입니다 ~~")
-    mage = pygame.image.load('./res/mage.jpg')  # 일단 이미지임
-    mage2 = pygame.image.load('./res/mage2.jpg')
+    mage = pygame.image.load('./res/wizard.png')  # 일단 이미지임
+    mage2 = pygame.image.load('./res/wizard2.png')
+    attackmotion1 = pygame.image.load('./res/wizard_attack.png')
+    attackmotion2 = pygame.image.load('./res/wizard_attack2.png')
+    hitmotion1 = pygame.image.load('./res/wizard_be attacked.png')
+    hitmotion2 = pygame.image.load('./res/wizard_be attacked2.png')
 
     @staticmethod
     def choose_turn():
